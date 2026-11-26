@@ -810,8 +810,8 @@ var Cyclist=(function(){
 
     // ---------- persona ----------
     var HIP=new V(-.12,1.02,0);
-    var torso=capsule(.135,.30,SHIRT); lean.add(torso);
-    var shoulders=new THREE.Mesh(g('shou',function(){ var c=new THREE.CapsuleGeometry(.07,.26,4,10); c.rotateX(Math.PI/2); return c; }),SHIRT); lean.add(shoulders);
+    var torso=capsule(.14,.30,SHIRT); lean.add(torso);
+    var shoulders=new THREE.Mesh(g('shou',function(){ var c=new THREE.CapsuleGeometry(.075,.28,4,10); c.rotateX(Math.PI/2); return c; }),SHIRT); lean.add(shoulders);
     var pelvis=new THREE.Mesh(g('pelvis',function(){ return new THREE.SphereGeometry(.15,12,8); }),PANT); pelvis.scale.set(1,.7,1.2); lean.add(pelvis);
     var neck=tubeMesh(.045,SK); lean.add(neck);
     var head=new THREE.Mesh(g('head',function(){ return new THREE.SphereGeometry(.105,16,12); }),SK); lean.add(head);
@@ -820,14 +820,14 @@ var Cyclist=(function(){
       return {sd:sd, thigh:limb(.068,PANT), shin:limb(.052,PANT), foot:new THREE.Mesh(g('foot',function(){ var b=new THREE.BoxGeometry(.24,.07,.09); b.translate(.05,0,0); return b; }),SHOE), knee:new V()};
     });
     legs.forEach(function(l){ lean.add(l.thigh,l.shin,l.foot); });
-    var arms=[-1,1].map(function(sd){ return {sd:sd, up:limb(.045,SHIRT), fo:limb(.038,SK), hand:new THREE.Mesh(g('hand',function(){ return new THREE.SphereGeometry(.04,8,6); }),SK), el:new V()}; });
+    var arms=[-1,1].map(function(sd){ return {sd:sd, up:limb(.05,SHIRT), fo:limb(.04,SK), hand:new THREE.Mesh(g('hand',function(){ return new THREE.SphereGeometry(.04,8,6); }),SK), el:new V()}; });
     arms.forEach(function(a){ lean.add(a.up,a.fo,a.hand); });
 
     root.traverse(function(o){ if(o.isMesh){ o.castShadow=false; o.receiveShadow=false; } });
 
     var crank=R()*6.28, dist=0, leanA=0, steerA=0, bob=0;
     var L1=.45, L2=.46, PR=.17;
-    var tPed=new V(), tHip=new V(), bend=new V(1,.15,0), bendArm=new V(-.2,-1,0);
+    var tPed=new V(), tHip=new V(), bend=new V(1,.2,0), bendArm=new V(-.2,-1,0);
     var SH=new V(), GRIP=new V(), tmpQ=new THREE.Quaternion();
     function pose(){
       // pedal: gira en sentido de avance (arriba→adelante→abajo)
@@ -840,20 +840,20 @@ var Cyclist=(function(){
       var hipC=HIP.clone(); hipC.y+=bob;
       pelvis.position.copy(hipC).add(new V(.0,-.02,0));
       // torso inclinado hacia adelante (postura de bici urbana)
-      var shC=new V(.10,1.47+bob*.6,0);
+      var shC=new V(.17,1.43+bob*.6,0);
       setTubeCapsule(torso,hipC,shC);
       torso.rotateY(.0);
       var sway=.035*Math.sin(crank);
-      torso.rotation.x+=sway;
+      torso.rotation.x+=sway; torso.rotateY(.06*Math.sin(crank));
       shoulders.position.copy(shC).add(new V(-.01,-.03,0));
-      var neckA=shC.clone().add(new V(.01,.02,0)), headC=shC.clone().add(new V(.06,.15,0));
+      var neckA=shC.clone().add(new V(.02,.02,0)), headC=shC.clone().add(new V(.10,.15,0));
       setTube(neck,neckA,headC.clone().add(new V(-.03,-.08,0)));
       head.position.copy(headC); helmet.position.copy(headC).add(new V(-.01,.02,0)); helmet.rotation.z=-.15;
       legs.forEach(function(l){
         var ped=l.sd>0?pr:pl;
         tHip.copy(hipC).setZ(l.sd*.10);
         tPed.copy(ped).setZ(l.sd*.13).add(new V(-.02,.05,0)); // tobillo un poco arriba y atrás del pedal
-        ik(tHip,tPed,L1,L2,bend,l.knee);
+        ik(tHip,tPed,L1,L2,bend.set(1,.2,l.sd*.12),l.knee);
         setLimb(l.thigh,tHip,l.knee); setLimb(l.shin,l.knee,tPed);
         l.foot.position.copy(tPed).add(new V(0,-.035,0));
         l.foot.rotation.z=-.15+.18*Math.sin(crank*(l.sd>0?1:-1)+1.2);
@@ -870,7 +870,7 @@ var Cyclist=(function(){
     function setTubeCapsule(mesh,a,b){
       TMP.subVectors(b,a); var L=TMP.length(); mesh.position.copy(a);
       Q.setFromUnitVectors(UP,TMP.normalize()); mesh.quaternion.copy(Q);
-      mesh.scale.set(.86,L/(.30+.27),1.18);
+      mesh.scale.set(.95,L/(.30+.28),1.32);
     }
     pose();
     return {
@@ -1064,7 +1064,7 @@ addEventListener('keydown',function(e){
    2. ESCENA 3D: MAPA REAL DE BUENOS AIRES
    ========================================================= */
 var canvas=$('#gl'), renderer=null;
-try{ renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,powerPreference:'high-performance'}); }catch(e){ renderer=null; }
+try{ renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,powerPreference:'high-performance',logarithmicDepthBuffer:true}); }catch(e){ renderer=null; }
 if(!renderer){ document.documentElement.classList.add('nogl'); loopNoGL(); go(0,true); return; }
 function loopNoGL(){ var last=performance.now(); (function f(t){ var dt=Math.min(.05,(t-last)/1000); last=t; drawRain(dt); requestAnimationFrame(f); })(last); }
 
@@ -1095,6 +1095,7 @@ function lineLayer(d,color,opacity,y){
   var l=new THREE.LineSegments(g,new THREE.LineBasicMaterial({color:color,transparent:true,opacity:opacity,depthWrite:false,fog:true}));
   scene.add(l); return l;
 }
+var FILLN=0;
 function fillLayer(d,color,y){
   var pos=[];
   parsePath(d).forEach(function(p){
@@ -1105,7 +1106,7 @@ function fillLayer(d,color,y){
     g.dispose();
   });
   var geo=new THREE.BufferGeometry(); geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
-  var mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:color,fog:true,side:THREE.DoubleSide})); scene.add(mesh); return mesh;
+  var mesh=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:color,fog:true,side:THREE.DoubleSide,depthWrite:false})); mesh.renderOrder=-9+(FILLN++); scene.add(mesh); return mesh;
 }
 function glowTexture(){
   var c=document.createElement('canvas'); c.width=c.height=64; var x=c.getContext('2d');
@@ -1115,8 +1116,8 @@ function glowTexture(){
 var GLOW=glowTexture();
 
 // ---------- base del mapa ----------
-var ground=new THREE.Mesh(new THREE.PlaneGeometry(80000,80000),new THREE.MeshBasicMaterial({color:'#090B0E',fog:true}));
-ground.rotation.x=-Math.PI/2; ground.position.y=-.6; scene.add(ground);
+var ground=new THREE.Mesh(new THREE.PlaneGeometry(80000,80000),new THREE.MeshBasicMaterial({color:'#090B0E',fog:true,depthWrite:false}));
+ground.rotation.x=-Math.PI/2; ground.position.y=-.6; ground.renderOrder=-10; scene.add(ground);
 var P=MAP.paths;
 // cada capa guarda su color oscuro y su color claro
 var THEMED=[[ground.material,'#090B0E','#D3D9DC']];
@@ -1303,7 +1304,7 @@ function updateRiders(dt){
     var da=ang-r.lastAng; while(da>Math.PI) da-=2*Math.PI; while(da<-Math.PI) da+=2*Math.PI;
     var curv=da/Math.max(.001,r.v*dt);
     r.lastAng+=da*Math.min(1,dt*6);
-    r.cy.group.position.set(RP.x+Math.sin(r.lastAng)*r.lat, 0, RP.z+Math.cos(r.lastAng)*r.lat);
+    r.cy.group.position.set(RP.x+Math.sin(r.lastAng)*r.lat, .14, RP.z+Math.cos(r.lastAng)*r.lat);
     r.cy.group.rotation.y=r.lastAng;
     r.cy.step(r.v*dt,clamp(curv,-.25,.25),dt,r.v);
   });

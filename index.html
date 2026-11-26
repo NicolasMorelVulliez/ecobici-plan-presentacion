@@ -521,6 +521,10 @@
   .ask h3{color:#fff;font-family:var(--display);font-weight:800;font-size:calc(24px*var(--fs));letter-spacing:-.01em;padding-right:10px}
   .ask .it{display:flex;align-items:center;gap:12px;font-size:calc(15.5px*var(--fs));line-height:1.35;color:#fff;padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.06);border:1px solid rgba(156,195,196,.2)}
   .ask .it .ico{width:38px;height:38px;border-radius:11px;background:var(--yellow);color:var(--teal);display:grid;place-items:center;flex:none}
+  /* 10 · el porqué de cada límite · 11 · qué cierra cada mes del piloto y para qué es cada pedido */
+  #limites .lim span small{display:block;font-family:var(--mono);font-size:calc(12px*var(--fs));line-height:1.45;color:var(--muted);margin-top:5px}
+  #piloto .month .closes{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-family:var(--mono);font-size:calc(12px*var(--fs));line-height:1.45;color:var(--teal-3)}
+  #piloto .ask .it small{display:block;font-family:var(--mono);font-size:calc(11.5px*var(--fs));line-height:1.4;color:var(--mist);margin-top:3px}
 
   /* ===================== CIERRE ===================== */
   .endcap{position:relative;background:var(--teal);color:#fff;overflow:hidden;scroll-snap-align:start}
@@ -1075,21 +1079,22 @@
     <div class="lims">
       <div class="lrow hd rv"><div>Límite hoy</div><div></div><div>Cómo lo resolvemos en el piloto</div></div>
       <div class="lrow rv d1">
-        <div class="lim"><svg class="ic"><use href="#i-alert"/></svg>No hay historial del stock real de cada estación</div>
+        <div class="lim"><svg class="ic"><use href="#i-alert"/></svg><span>No hay historial del stock real de cada estación<small>El operador solo muestra el estado del momento, y un viaje que no se pudo hacer por falta de bicis no queda registrado.</small></span></div>
         <div class="arrow" aria-hidden="true" style="--dl:.3s"><svg viewBox="0 0 90 20"><path d="M12,10 H76 M68,3 L77,10 L68,17"/></svg></div>
         <div class="fix"><span class="ck"><svg class="ic"><use href="#i-check"/></svg></span>Capturar el estado en vivo de las estaciones (el script ya existe) y medir vaciamientos</div>
       </div>
       <div class="lrow rv d2">
-        <div class="lim"><svg class="ic"><use href="#i-alert"/></svg>La prueba usó el clima registrado, no el pronóstico</div>
+        <div class="lim"><svg class="ic"><use href="#i-alert"/></svg><span>La prueba usó el clima registrado, no el pronóstico<small>El pronóstico a veces falla: con lluvia, el error real va a ser algo mayor que el 19 % medido.</small></span></div>
         <div class="arrow" aria-hidden="true" style="--dl:.5s"><svg viewBox="0 0 90 20"><path d="M12,10 H76 M68,3 L77,10 L68,17"/></svg></div>
         <div class="fix"><span class="ck"><svg class="ic"><use href="#i-check"/></svg></span>Conectar el pronóstico diario y medir el error real con lluvia</div>
       </div>
       <div class="lrow rv d3">
-        <div class="lim"><svg class="ic"><use href="#i-alert"/></svg>Tres meses de prueba, todos de invierno</div>
+        <div class="lim"><svg class="ic"><use href="#i-alert"/></svg><span>Tres meses de prueba, todos de invierno<small>Se reservaron julio a septiembre de 2026 para probar con días que el modelo nunca vio.</small></span></div>
         <div class="arrow" aria-hidden="true" style="--dl:.7s"><svg viewBox="0 0 90 20"><path d="M12,10 H76 M68,3 L77,10 L68,17"/></svg></div>
         <div class="fix"><span class="ck"><svg class="ic"><use href="#i-check"/></svg></span>Reentrenar cada mes y evaluar la temporada de verano</div>
       </div>
     </div>
+    <p class="foot rv d4">Mientras tanto, el plan suma un margen de 2 bicicletas por estación: es más o menos lo que el modelo se equivoca en el balance de una mañana.</p>
   </div>
 </section>
 
@@ -1106,14 +1111,14 @@
       <span class="rider" id="trackRider"></span>
     </div>
     <div class="months">
-      <article class="month rv d1"><div class="m">Mes 1</div><h3>Integración</h3><p>Pronóstico diario conectado y captura del stock real de las estaciones.</p></article>
-      <article class="month rv d2"><div class="m">Mes 2</div><h3>Operación asistida</h3><p>Operaciones arma las rutas con el plan y compara con el método actual.</p></article>
-      <article class="month rv d3"><div class="m">Mes 3</div><h3>Medición</h3><p>Estaciones vacías, viajes de camión ahorrados y decisión de continuar.</p></article>
+      <article class="month rv d1"><div class="m">Mes 1</div><h3>Integración</h3><p>Pronóstico diario conectado y captura del stock real de las estaciones.</p><p class="closes">Cierra: historial de stock y pronóstico real</p></article>
+      <article class="month rv d2"><div class="m">Mes 2</div><h3>Operación asistida</h3><p>Operaciones arma las rutas con el plan y compara con el método actual.</p><p class="closes">El plan sugiere, operaciones decide</p></article>
+      <article class="month rv d3"><div class="m">Mes 3</div><h3>Medición</h3><p>Estaciones vacías, viajes de camión ahorrados y decisión de continuar.</p><p class="closes">Cierra: el verano y el error con el pronóstico real</p></article>
     </div>
     <div class="ask rv d4">
       <h3>Lo que les pedimos hoy</h3>
-      <div class="it"><span class="ico"><svg class="ic"><use href="#i-db"/></svg></span>Acceso a los datos de stock de las estaciones</div>
-      <div class="it"><span class="ico"><svg class="ic"><use href="#i-user"/></svg></span>Un responsable de operaciones para el piloto</div>
+      <div class="it"><span class="ico"><svg class="ic"><use href="#i-db"/></svg></span><span>Acceso a los datos de stock de las estaciones<small>Para medir vaciamientos desde el primer día</small></span></div>
+      <div class="it"><span class="ico"><svg class="ic"><use href="#i-user"/></svg></span><span>Un responsable de operaciones para el piloto<small>Que use el plan cada noche y lo compare con su método</small></span></div>
     </div>
   </div>
 </section>
